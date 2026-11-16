@@ -179,7 +179,8 @@ impl NativeMenu {
             }
             item.shown = Some(now);
         }
-        let titles: Vec<String> = app.session.documents().iter().map(|d| d.title()).collect();
+        // With a native window per presentation AppKit lists the windows itself (#354).
+        let titles: Vec<String> = if app.native_windows { Vec::new() } else { app.session.documents().iter().map(|d| d.title()).collect() };
         if titles != self.doc_titles {
             for w in self.docs.drain(..) {
                 let _ = self.window_menu.remove(&w);
