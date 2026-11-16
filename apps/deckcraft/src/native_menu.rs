@@ -128,7 +128,8 @@ impl NativeMenu {
         while let Ok(e) = self.events.try_recv() {
             let id = e.id().0.as_str();
             if id == QUIT {
-                ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                // Asks each unsaved presentation in its own window (#354).
+                app.request_quit(ctx);
                 continue;
             }
             if let Some(i) = id.strip_prefix(DOC).and_then(|i| i.parse::<usize>().ok()) {
