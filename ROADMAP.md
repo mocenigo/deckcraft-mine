@@ -155,6 +155,7 @@ app's JSON control channel (`deckcraft --control PORT`).
 
 | Date | What landed |
 |---|---|
+| 2026-11-17 | On macOS, Format › Font…, Cmd+T and the shape menu's Font… open the system font panel, with its text colour, underline and strikethrough, and the system colour picker; the ribbon's Font… button keeps the Font dialog |
 | 2026-11-16 | Desktop: each open presentation has its own native window, as in PowerPoint. File › New, Open, Open Recent and files opened from Finder open a new window instead of replacing the presentation on screen; closing a window closes its presentation, asking in that window when it has unsaved changes, and Quit asks for each unsaved presentation in its own window, stopping on Cancel (#354) |
 | 2026-11-14 | Slide show: a slide the show advances to again (click, →, Space, automatic advance or a loop) starts over, so its animations play again, as in PowerPoint. Back and links still show it as it was left (#2090) |
 | 2026-11-11 | Media: the Opus decoder and the Ogg, MP4/MOV and Matroska demuxers are craft-audio and craft-media from craft-libs; DeckCraft's own copies and re-export crates are removed |
@@ -345,6 +346,7 @@ app's JSON control channel (`deckcraft --control PORT`).
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-17 | trivial | Progress log: macOS system font panel and colour picker for Font…; parity scores unchanged |
 | 2026-11-14 | trivial | Progress log: a slide the show advances to again plays its animations again (#2090); parity scores unchanged |
 | 2026-11-11 | trivial | Opus and container code moved to craft-libs crates; parity scores unchanged |
 | 2026-11-04 | trivial | Ogg Opus recovery duration includes its recovered tail; parity scores unchanged |

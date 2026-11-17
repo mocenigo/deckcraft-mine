@@ -44,12 +44,13 @@ winit = { version = "0.30", default-features = false, features = ["rwh_06"] }
 pollster = "1"
 # The native menu bar (`src/native_menu.rs`); same crate and features as GridCraft.
 muda = { version = "0.21", default-features = false }
-# save_sheet.rs asks Save Changes as a sheet on the presentation's window, as GridCraft does.
+# save_sheet.rs asks Save Changes as a sheet on the presentation's window, as GridCraft does;
+# font_panel.rs receives the system font panel's and colour panel's picks.
 # Already in Cargo.lock (winit); pinned exactly to the same versions.
 block2 = "=0.6.2"
 objc2 = "=0.6.5"
-objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std", "block2", "NSAlert", "NSApplication", "NSButton", "NSControl", "NSResponder", "NSView", "NSWindow"] }
-objc2-foundation = { version = "=0.3.2", default-features = false, features = ["std", "NSString"] }
+objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std", "block2", "objc2-core-foundation", "NSAlert", "NSApplication", "NSButton", "NSColor", "NSColorPanel", "NSColorSpace", "NSControl", "NSFont", "NSFontManager", "NSFontPanel", "NSPanel", "NSResponder", "NSView", "NSWindow"] }
+objc2-foundation = { version = "=0.3.2", default-features = false, features = ["std", "NSDictionary", "NSString", "NSValue"] }
 
 [target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
 winit = { version = "0.30", default-features = false, features = ["x11"] }
@@ -62,4 +63,9 @@ objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std
 
 [[test]]
 name = "mac_menu_appkit"
+harness = false
+
+# tests/mac_font_panel.rs: the font panel's picks through AppKit, on the main thread.
+[[test]]
+name = "mac_font_panel"
 harness = false
