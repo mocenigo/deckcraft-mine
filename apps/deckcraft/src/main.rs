@@ -28,6 +28,8 @@ mod native_menu;
 #[cfg(not(target_arch = "wasm32"))]
 mod pasteboard;
 #[cfg(target_os = "macos")]
+mod save_sheet;
+#[cfg(target_os = "macos")]
 mod sheet;
 
 use deckcraft_engine::Session;
@@ -314,6 +316,10 @@ fn main() -> eframe::Result {
             #[cfg(all(unix, not(target_os = "macos")))]
             if let Some(window) = cc.winit_window().cloned() {
                 app.services.displays = Some(Box::new(move || display_count(&window)));
+            }
+            #[cfg(target_os = "macos")]
+            {
+                app.services.save_prompt = Some(save_sheet::hook(&cc.egui_ctx));
             }
             load_prefs(&mut app);
             app.enable_update_checks();

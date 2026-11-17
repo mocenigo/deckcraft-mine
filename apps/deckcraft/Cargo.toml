@@ -44,6 +44,12 @@ winit = { version = "0.30", default-features = false, features = ["rwh_06"] }
 pollster = "1"
 # The native menu bar (`src/native_menu.rs`); same crate and features as GridCraft.
 muda = { version = "0.21", default-features = false }
+# save_sheet.rs asks Save Changes as a sheet on the presentation's window, as GridCraft does.
+# Already in Cargo.lock (winit); pinned exactly to the same versions.
+block2 = "=0.6.2"
+objc2 = "=0.6.5"
+objc2-app-kit = { version = "=0.3.2", default-features = false, features = ["std", "block2", "NSAlert", "NSApplication", "NSButton", "NSControl", "NSResponder", "NSView", "NSWindow"] }
+objc2-foundation = { version = "=0.3.2", default-features = false, features = ["std", "NSString"] }
 
 [target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
 winit = { version = "0.30", default-features = false, features = ["x11"] }
