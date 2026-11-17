@@ -173,7 +173,7 @@ consistency is open (#73, #56).
 
 | Date | Change | Summary |
 |---|---|---|
-| 2026-11-17 | trivial | On macOS, Format › Font…, Cmd+T and the shape menu's Font… open the system font panel, with its text colour, underline and strikethrough, and the system colour picker; the ribbon's Font… button keeps the Font dialog |
+| 2026-11-17 | trivial | On macOS, Font… (Format menu, Cmd+T, the shape menu and the ribbon) opens the system font panel, with its text colour, underline and strikethrough, and the system colour picker. The ribbon's Character Spacing menu takes a spacing in points and an offset in percent, and Change Case adds Small Caps and All Caps, so nothing needs the Font dialog there |
 | 2026-11-15 | minor | Native macOS menu bar (File, Edit, View, Insert, Format, Arrange, Tools, Slide Show, Window, Help) runs DeckCraft commands and dims entries that cannot run; estimates re-totalled (~23–41 h) |
 | 2026-11-02 | trivial | File › About replaces Account; product links, credits and appearance retained |
 | 2026-10-31 | trivial | No Fill hit-testing follows resolved fill instead of the presence of a style (#1621); scores unchanged |
