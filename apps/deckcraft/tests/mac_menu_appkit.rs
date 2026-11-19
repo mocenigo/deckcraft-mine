@@ -40,11 +40,11 @@ fn main() {
     let file: Retained<NSMenu> = bar.itemWithTitle(&NSString::from_str("File")).and_then(|i| i.submenu()).expect("File");
     let save = |m: &NSMenu| -> Retained<NSMenuItem> { m.itemWithTitle(&NSString::from_str("Save")).expect("Save") };
     // With no presentation open, Save is dimmed and Open isn't.
-    menu.refresh(&app, &ctx);
+    menu.refresh(&app);
     assert!(!save(&file).isEnabled(), "Save is dimmed without a presentation");
     assert!(file.itemWithTitle(&NSString::from_str("Open…")).expect("Open…").isEnabled());
     let _ = app.run("file.new", serde_json::json!({}));
-    menu.refresh(&app, &ctx);
+    menu.refresh(&app);
     assert!(save(&file).isEnabled(), "Save is enabled once a presentation is open");
     let tools = bar.itemWithTitle(&NSString::from_str("Tools")).and_then(|i| i.submenu()).expect("Tools");
     assert!(!tools.itemWithTitle(&NSString::from_str("Add-ins…")).expect("Add-ins…").isEnabled(), "no add-ins yet");
@@ -55,7 +55,7 @@ fn main() {
     assert_eq!(view.itemAtIndex(normal).expect("Normal").state(), objc2_app_kit::NSControlStateValueOn);
     view.performActionForItemAtIndex(normal);
     menu.poll(&mut app, &ctx);
-    menu.refresh(&app, &ctx);
+    menu.refresh(&app);
     assert_eq!(view.itemAtIndex(normal).expect("Normal").state(), objc2_app_kit::NSControlStateValueOn, "Normal is still checked");
 
     println!("mac_menu_appkit: ok");

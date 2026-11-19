@@ -73,7 +73,9 @@ impl DocWindows {
     }
 
     /// Draw every window. Called once per frame from the root window's UI pass.
-    pub fn show(&mut self, app: &mut SlideApp, ui: &mut egui::Ui) {
+    /// `front` runs in the pass of the window in front, before its UI, so what it does to the
+    /// context (focus, keys, clipboard commands) is that window's.
+    pub fn show(&mut self, app: &mut SlideApp, ui: &mut egui::Ui, mut front: impl FnMut(&mut SlideApp, &egui::Context)) {
         let ctx = ui.ctx().clone();
         let mut requested = app.continue_quit(&ctx);
         if let Some(uid) = requested {
@@ -82,6 +84,7 @@ impl DocWindows {
         self.sync(app, &ctx);
         if self.list.is_empty() {
             // No presentation: the root window shows the app without one.
+            front(app, &ctx);
             app.ui(ui);
             self.sync(app, &ctx);
             return;
@@ -100,6 +103,7 @@ impl DocWindows {
             })
         });
         let (base, fit) = (&self.base, self.fit);
+        let in_front = app.session.active().map(|d| d.uid);
         let events = self.viewports.show(
             ui,
             &mut self.list,
@@ -124,6 +128,9 @@ impl DocWindows {
                             Err(e) => app.set_status(e),
                         }
                     }
+                }
+                if in_front == Some(*w) {
+                    front(app, ui.ctx());
                 }
                 // Each presentation's widget memory (scroll positions…) stays its own, also when
                 // another presentation takes over the root window.

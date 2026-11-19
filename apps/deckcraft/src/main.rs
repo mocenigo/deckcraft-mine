@@ -63,10 +63,6 @@ impl eframe::App for App {
                 apply_font_pick(&mut self.0, &pick);
             }
         }
-        #[cfg(target_os = "macos")]
-        if let Some(m) = &mut self.3 {
-            m.poll(&mut self.0, ctx);
-        }
         self.0.logic(ctx);
         #[cfg(target_os = "macos")]
         if let Some(panel) = &self.4 {
@@ -78,10 +74,18 @@ impl eframe::App for App {
         self.0.raw_input_hook(ctx, raw);
     }
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        self.1.show(&mut self.0, ui);
+        // The menu's commands run in the pass of the window in front: its text field, its clipboard.
+        #[cfg(target_os = "macos")]
+        let menu = &mut self.3;
+        self.1.show(&mut self.0, ui, |_app, _ctx| {
+            #[cfg(target_os = "macos")]
+            if let Some(m) = menu {
+                m.poll(_app, _ctx);
+            }
+        });
         #[cfg(target_os = "macos")]
         if let Some(m) = &mut self.3 {
-            m.refresh(&self.0, ui.ctx());
+            m.refresh(&self.0);
         }
     }
     fn on_exit(&mut self) {

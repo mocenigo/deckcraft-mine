@@ -86,7 +86,7 @@ impl Desk {
                 act(app, &ctx);
             }
             app.logic(&ctx);
-            windows.show(app, ui);
+            windows.show(app, ui, |_, _| {});
         });
         record(out);
         // Close buttons are one-shot events.
@@ -375,4 +375,28 @@ fn a_presentation_that_takes_over_the_main_window_keeps_its_own_scroll() {
     desk.frames(3);
     desk.app.enter_deck(other);
     assert_eq!(desk.app.ui.thumbs_scroll, 0.0, "it keeps its own pane position, not the closed one's (#2200)");
+}
+
+#[test]
+fn the_front_hook_runs_once_in_the_window_in_front() {
+    // The menu bar's Copy reaches the presentation in front, not the root window (#2171).
+    let mut desk = Desk::new(2);
+    let (vp, front) = (0..2).map(|d| desk.uid(d)).map(|u| (desk.viewport(u), u)).find(|(vp, _)| *vp != ViewportId::ROOT).unwrap();
+    desk.app.enter_deck(front);
+    SENT.with(|s| s.borrow_mut().clear());
+    let mut input = RawInput { viewport_id: ViewportId::ROOT, screen_rect: Some(SCREEN), ..RawInput::default() };
+    input.viewports = INFOS.with(|i| i.borrow().clone());
+    input.viewports.entry(ViewportId::ROOT).or_default();
+    let Desk { ctx, app, windows } = &mut desk;
+    let mut ran = Vec::new();
+    let out = ctx.clone().run_ui(input, |ui| {
+        windows.show(app, ui, |_, ctx| {
+            ran.push(ctx.viewport_id());
+            ctx.send_viewport_cmd(ViewportCommand::RequestCopy);
+        })
+    });
+    record(out);
+    assert_eq!(ran, vec![vp]);
+    let sent = SENT.with(|s| s.borrow().clone());
+    assert!(sent_to(&sent, vp, &ViewportCommand::RequestCopy), "{sent:?}");
 }

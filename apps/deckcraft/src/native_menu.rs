@@ -37,6 +37,8 @@ pub struct NativeMenu {
     /// The open presentations at the end of the Window menu, and the titles they show.
     docs: Vec<CheckMenuItem>,
     doc_titles: Vec<String>,
+    /// Whether a text field in the window in front had focus when `poll` last ran.
+    text_field: bool,
 }
 
 fn add(parent: &Submenu, items: &mut Vec<Item>, app: &SlideApp, label: &str, action: &'static str, keys: Option<&'static str>) {
@@ -119,12 +121,14 @@ impl NativeMenu {
             let _ = tx.send(e);
             ctx.request_repaint();
         }));
-        NativeMenu { _menu: menu, events, items, window_menu, docs: Vec::new(), doc_titles: Vec::new() }
+        NativeMenu { _menu: menu, events, items, window_menu, docs: Vec::new(), doc_titles: Vec::new(), text_field: false }
     }
 
-    /// Runs the entries clicked (or whose shortcut was pressed) since the last frame.
+    /// Runs the entries clicked (or whose shortcut was pressed) since the last frame. `ctx` is the
+    /// pass of the window in front, so the keys and clipboard commands reach that window.
     pub fn poll(&mut self, app: &mut SlideApp, ctx: &egui::Context) {
         let text_field = ctx.text_edit_focused();
+        self.text_field = text_field;
         while let Ok(e) = self.events.try_recv() {
             let id = e.id().0.as_str();
             if id == QUIT {
@@ -163,8 +167,9 @@ impl NativeMenu {
     }
 
     /// Dims, enables and checks the entries for the state at the end of this frame.
-    pub fn refresh(&mut self, app: &SlideApp, ctx: &egui::Context) {
-        let text_field = ctx.text_edit_focused();
+    pub fn refresh(&mut self, app: &SlideApp) {
+        // The root's focus says nothing of another presentation's window.
+        let text_field = self.text_field;
         for item in &mut self.items {
             let now = (menus::menu_enabled(app, item.action, text_field), menus::menu_checked(app, item.action).unwrap_or(false));
             if item.shown == Some(now) {
