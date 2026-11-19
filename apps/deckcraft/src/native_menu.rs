@@ -150,6 +150,19 @@ impl NativeMenu {
                 continue;
             }
             match item.action {
+                // eframe drops clipboard commands sent to a presentation's own (immediate) window:
+                // its pass gets the events the root's would.
+                "edit.copy" | "edit.cut" | "edit.paste" if ctx.viewport_id() != egui::ViewportId::ROOT => {
+                    let event = match item.action {
+                        "edit.copy" => Some(egui::Event::Copy),
+                        "edit.cut" => Some(egui::Event::Cut),
+                        // No text (a picture only): the V release pastes it, as in the root window.
+                        _ => arboard::Clipboard::new().and_then(|mut c| c.get_text()).ok().filter(|t| !t.is_empty()).map(egui::Event::Paste),
+                    };
+                    if let Some(e) = event {
+                        ctx.input_mut(|i| i.events.push(e));
+                    }
+                }
                 // The system clipboard events reach the text field or the slide like the keys do.
                 "edit.copy" => ctx.send_viewport_cmd(egui::ViewportCommand::RequestCopy),
                 "edit.cut" => ctx.send_viewport_cmd(egui::ViewportCommand::RequestCut),
