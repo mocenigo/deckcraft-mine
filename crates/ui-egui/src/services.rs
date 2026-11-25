@@ -90,4 +90,7 @@ pub struct Services {
     /// Show the system font panel on the selection's font (family, size, bold, italic), instead of
     /// the Font dialog. The host formats the selection with what the user picks there.
     pub show_fonts: Option<Box<dyn Fn(&str, f64, bool, bool)>>,
+    /// Work that must finish on a clean quit. `eframe::App::on_exit` takes and runs it once: on
+    /// macOS ⌘Q ends the process inside AppKit's terminate, so nothing after `run_native` runs.
+    pub at_exit: Option<Box<dyn FnOnce()>>,
 }

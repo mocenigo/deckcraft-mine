@@ -24,10 +24,12 @@ pub mod doc_window;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod doc_windows;
 pub mod eyedropper;
+pub mod flavor;
 pub mod icons;
 pub mod media;
 pub mod menus;
 pub mod opening;
+pub mod os_window;
 pub mod presenter;
 pub mod ribbon;
 pub mod settings;
