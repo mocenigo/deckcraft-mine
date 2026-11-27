@@ -7,10 +7,11 @@
 //! from Finder each get a window, and closing a window closes its presentation (asking first
 //! when it has unsaved changes).
 
-use craft_window::{Frame, Viewports, WindowEvent, WindowId, WindowList};
+use craft_window::{WindowId, WindowList};
 use egui::{ViewportBuilder, ViewportCommand, ViewportId};
 
 use crate::SlideApp;
+use crate::viewports::{CASCADE_STEP, Viewports, WindowEvent};
 
 /// The open presentations' windows (see the module docs). Each window holds its presentation's
 /// engine uid.
@@ -27,7 +28,7 @@ impl DocWindows {
     /// Windows built like `base`, and the app switched to a window per presentation.
     pub fn new(app: &mut SlideApp, base: ViewportBuilder) -> Self {
         app.native_windows = true;
-        DocWindows { list: WindowList::new(), viewports: Viewports::new(Frame::Desktop), base, fit: None }
+        DocWindows { list: WindowList::new(), viewports: Viewports::default(), base, fit: None }
     }
 
     /// The presentation each window shows, most recently focused first.
@@ -50,7 +51,7 @@ impl DocWindows {
             if self.viewports.root() == Some(id) {
                 // The root window stays open as the next window, or as the empty app window.
                 match self.list.active() {
-                    Some(next) => self.viewports.adopt(ctx, &self.list, next),
+                    Some(next) => self.viewports.adopt(ctx, next),
                     None => self.viewports.set_root(None),
                 }
             }
@@ -99,7 +100,7 @@ impl DocWindows {
             ctx.input(|i| {
                 let v = i.viewport();
                 let frame = v.outer_rect?.size() - v.inner_rect?.size();
-                Some(v.monitor_size? - frame - egui::Vec2::splat(3.0 * craft_window::CASCADE_STEP))
+                Some(v.monitor_size? - frame - egui::Vec2::splat(3.0 * CASCADE_STEP))
             })
         });
         let (base, fit) = (&self.base, self.fit);
